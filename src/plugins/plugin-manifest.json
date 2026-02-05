@@ -1,0 +1,6 @@
+{
+    "plugins": [
+        {"name": "List"},
+        {"name": "Dynamic"}
+    ]
+}

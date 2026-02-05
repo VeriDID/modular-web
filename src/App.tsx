@@ -1,20 +1,28 @@
 import './App.css'
 import { BrowserRouter, Routes, Route, NavLink  } from 'react-router';
-import React, { Suspense, lazy } from 'react';
+import { Suspense, lazy, type JSX } from 'react';
+import plugin_manifest from './plugins/plugin-manifest.json';
 
-const Dynamic = lazy(() => import('./plugins/dynamic'));
+interface Menu {interface: string, path: string, element: JSX.Element} 
 
-const menu = [
+let menu: Menu[] = [
   { interface: "Dashboard", path:"/", element:<Dashboard /> },
   { interface: "Settings", path:"/settings", element:<Settings /> },
-  { interface: "Dynamic", path:"/dynamic", element:<Dynamic message="Hello" /> }
 ];
+
+plugin_manifest.plugins.map(plugin => {
+  const modulePath = './plugins/'+plugin.name+'/'+plugin.name;
+  const Element = lazy(() => import(/* @vite-ignore */ modulePath));
+  const PropValue = "Hello " + plugin.name
+  menu.push({interface: plugin.name, path: '/plugins/'+plugin.name, element: <Element message={PropValue}/>})
+})
 
 function App() {
   return (
     <BrowserRouter>
       {menu.map(item => (
         <NavLink
+          key={item.path}
           to={item.path}
           style={({ isActive }) => ({
             padding: 5,
